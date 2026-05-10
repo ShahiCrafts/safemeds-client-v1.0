@@ -12,6 +12,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _bottomNavIndex = 0;
+  bool _isStreakExpanded = false;
 
   static const Color _brand      = Color(0xFF2563EB); // blue (was 0xFF5271FF purple)
   static const Color _brandLight = Color(0xFFEFF6FF); // blue-50 (was 0xFFF0F2FF)
@@ -97,7 +98,11 @@ class _MyHomePageState extends State<MyHomePage> {
               _buildHeader(),
               const SizedBox(height: 20),
               _buildGamificationSection(),
-              const SizedBox(height: 32),
+              const SizedBox(height: 28),
+              const Padding(
+                padding: EdgeInsets.only(left: 20, right: 20, bottom: 12),
+                child: Divider(color: Color(0xFFE5E7EB), thickness: 1.2, height: 1),
+              ),
               _buildHealthStatsRow(),
               const SizedBox(height: 32),
               _buildRemindersSection(),
@@ -464,15 +469,15 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget _buildGamificationSection() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Column(
+      child: Stack(
+        clipBehavior: Clip.none,
+        alignment: Alignment.bottomCenter,
         children: [
-          // Redesigned Streak & XP Dashboard
           Container(
-            padding: const EdgeInsets.all(18),
+            padding: const EdgeInsets.fromLTRB(18, 18, 18, 14),
             decoration: BoxDecoration(
-              color: Colors.transparent,
-              borderRadius: BorderRadius.circular(22),
-              border: Border.all(color: const Color(0xFFE5E7EB), width: 1.5),
+              color: _card,
+              borderRadius: BorderRadius.circular(24),
             ),
             child: Column(
               children: [
@@ -546,11 +551,67 @@ class _MyHomePageState extends State<MyHomePage> {
                     _buildDayNode("S", false, false),
                   ],
                 ),
+
+                // Expanded Content
+                if (_isStreakExpanded) ...[
+                  const SizedBox(height: 20),
+                  Container(
+                    height: 1.2,
+                    color: const Color(0xFFE5E7EB),
+                  ),
+                  const SizedBox(height: 20),
+                  _buildMilestoneRow(Icons.verified_user_rounded, "Total Scans", "142 Batches"),
+                  const SizedBox(height: 16),
+                  _buildMilestoneRow(Icons.emoji_events_rounded, "Current Level", "Master (Lvl 4)"),
+                  const SizedBox(height: 16),
+                  _buildMilestoneRow(Icons.calendar_today_rounded, "Joined Date", "March 2024"),
+                  const SizedBox(height: 6),
+                ],
               ],
+            ),
+          ),
+          // Docked Toggle Handle
+          Positioned(
+            bottom: -22,
+            child: GestureDetector(
+              onTap: () => setState(() => _isStreakExpanded = !_isStreakExpanded),
+              child: Container(
+                width: 48,
+                height: 32,
+                decoration: BoxDecoration(
+                  color: _card,
+                  borderRadius: const BorderRadius.vertical(
+                    bottom: Radius.circular(16),
+                  ),
+                ),
+                child: Icon(
+                  _isStreakExpanded ? Icons.keyboard_arrow_up_rounded : Icons.keyboard_arrow_down_rounded,
+                  color: _textMuted,
+                  size: 26,
+                ),
+              ),
             ),
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildMilestoneRow(IconData icon, String label, String value) {
+    return Row(
+      children: [
+        Icon(icon, size: 20, color: _brand),
+        const SizedBox(width: 12),
+        Text(
+          label,
+          style: const TextStyle(fontSize: 16, color: _textMuted, fontWeight: FontWeight.w500),
+        ),
+        const Spacer(),
+        Text(
+          value,
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: _textDark),
+        ),
+      ],
     );
   }
 
