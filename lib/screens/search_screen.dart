@@ -42,8 +42,8 @@ class _SearchScreenState extends State<SearchScreen> {
   final List<_TrendingItem> _trending = [
     _TrendingItem(
       title: "Paracetamol Safety Alert",
-      subtitle: "Counterfeit batch reported",
-      icon: Icons.trending_up_rounded,
+      subtitle: "Counterfeit batch reported in Kathmandu",
+      icon: Icons.warning_amber_rounded,
       tag: "Trending",
       tagColor: Color(0xFFFF5640),
       tagBg: Color(0xFFFFF0EF),
@@ -51,7 +51,7 @@ class _SearchScreenState extends State<SearchScreen> {
     _TrendingItem(
       title: "COVID-19 Booster",
       subtitle: "Availability in your area",
-      icon: Icons.trending_up_rounded,
+      icon: Icons.vaccines_rounded,
       tag: "Popular",
       tagColor: Color(0xFFFF8000),
       tagBg: Color(0xFFFFF8EC),
@@ -59,7 +59,7 @@ class _SearchScreenState extends State<SearchScreen> {
     _TrendingItem(
       title: "Diabetes Medication Guide",
       subtitle: "Updated dosage recommendations",
-      icon: Icons.trending_up_rounded,
+      icon: Icons.auto_stories_rounded,
       tag: "New",
       tagColor: Color(0xFF10B981),
       tagBg: Color(0xFFEDF7F2),
@@ -152,6 +152,12 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    _searchFocus.addListener(() => setState(() {}));
+  }
+
+  @override
   void dispose() {
     _searchController.dispose();
     _searchFocus.dispose();
@@ -166,11 +172,11 @@ class _SearchScreenState extends State<SearchScreen> {
         child: Column(
           children: [
             _buildAppBar(),
-            const SizedBox(height: 12),
+            const SizedBox(height: 16),
             _buildSearchBar(),
-            const SizedBox(height: 12),
+            const SizedBox(height: 14),
             _buildCategoryChips(),
-            const SizedBox(height: 4),
+            const SizedBox(height: 6),
             Expanded(
               child: _query.isNotEmpty
                   ? _buildSearchResults()
@@ -227,6 +233,23 @@ class _SearchScreenState extends State<SearchScreen> {
                 shape: BoxShape.circle,
               ),
               child: const Icon(
+                Icons.tune_rounded,
+                size: 20,
+                color: _textDark,
+              ),
+            ),
+          ),
+          const SizedBox(width: 8),
+          GestureDetector(
+            onTap: () {},
+            child: Container(
+              width: 40,
+              height: 40,
+              decoration: const BoxDecoration(
+                color: _card,
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
                 Icons.qr_code_scanner_rounded,
                 size: 20,
                 color: _textDark,
@@ -241,24 +264,27 @@ class _SearchScreenState extends State<SearchScreen> {
   // ── Search Bar ──────────────────────────────────────────────────────────
 
   Widget _buildSearchBar() {
+    final bool hasFocus = _searchFocus.hasFocus;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Container(
-        height: 52,
+        height: 54,
         decoration: BoxDecoration(
-          color: _card,
+          color: hasFocus ? Colors.white : _card,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: _searchFocus.hasFocus
-                ? _brand
-                : const Color(0xFFE5E7EB),
-            width: 1.5,
+            color: hasFocus ? _brand : const Color(0xFFE5E7EB),
+            width: hasFocus ? 2 : 1.5,
           ),
         ),
         child: Row(
           children: [
             const SizedBox(width: 16),
-            const Icon(Icons.search_rounded, size: 22, color: _textMuted),
+            Icon(
+              Icons.search_rounded,
+              size: 22,
+              color: hasFocus ? _brand : _textMuted,
+            ),
             const SizedBox(width: 10),
             Expanded(
               child: TextField(
@@ -274,7 +300,7 @@ class _SearchScreenState extends State<SearchScreen> {
                   hintText: "Search medicines, pharmacies...",
                   hintStyle: TextStyle(
                     fontSize: 16,
-                    color: Color(0xFFC4C9D4),
+                    color: Color(0xFFB0B7C3),
                     fontWeight: FontWeight.w400,
                   ),
                   border: InputBorder.none,
@@ -289,11 +315,17 @@ class _SearchScreenState extends State<SearchScreen> {
                   _searchController.clear();
                   setState(() => _query = "");
                 },
-                child: const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 14),
-                  child: Icon(
+                child: Container(
+                  margin: const EdgeInsets.only(right: 10),
+                  width: 28,
+                  height: 28,
+                  decoration: const BoxDecoration(
+                    color: _card,
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
                     Icons.close_rounded,
-                    size: 20,
+                    size: 16,
                     color: _textMuted,
                   ),
                 ),
@@ -352,70 +384,28 @@ class _SearchScreenState extends State<SearchScreen> {
 
   Widget _buildDiscoverContent() {
     return ListView(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
       children: [
         // Recent Searches
         if (_recentSearches.isNotEmpty) ...[
-          Row(
-            children: [
-              const Text(
-                "Recent Searches",
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w800,
-                  color: _textDark,
-                  letterSpacing: -0.2,
-                ),
-              ),
-              const Spacer(),
-              GestureDetector(
-                onTap: () => setState(() => _recentSearches.clear()),
-                child: const Text(
-                  "Clear all",
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: _brand,
-                  ),
-                ),
-              ),
-            ],
+          _buildSectionHeader(
+            "Recent Searches",
+            trailingText: "Clear all",
+            onTrailingTap: () => setState(() => _recentSearches.clear()),
           ),
           const SizedBox(height: 12),
           Wrap(
             spacing: 8,
             runSpacing: 8,
-            children: _recentSearches.map((s) => _buildRecentChip(s)).toList(),
+            children:
+                _recentSearches.map((s) => _buildRecentChip(s)).toList(),
           ),
           const SizedBox(height: 28),
         ],
 
-        // Trending
-        const Text(
-          "Trending Now",
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w800,
-            color: _textDark,
-            letterSpacing: -0.2,
-          ),
-        ),
-        const SizedBox(height: 12),
-        ..._trending.map((t) => _buildTrendingCard(t)),
-
-        const SizedBox(height: 28),
-
         // Quick Actions
-        const Text(
-          "Quick Actions",
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w800,
-            color: _textDark,
-            letterSpacing: -0.2,
-          ),
-        ),
-        const SizedBox(height: 12),
+        _buildSectionHeader("Quick Actions"),
+        const SizedBox(height: 14),
         Row(
           children: [
             Expanded(
@@ -423,7 +413,6 @@ class _SearchScreenState extends State<SearchScreen> {
                 Icons.qr_code_scanner_rounded,
                 "Scan\nMedicine",
                 _brand,
-                _brandLight,
               ),
             ),
             const SizedBox(width: 10),
@@ -432,7 +421,6 @@ class _SearchScreenState extends State<SearchScreen> {
                 Icons.local_pharmacy_rounded,
                 "Find\nPharmacy",
                 _green,
-                const Color(0xFFEDF7F2),
               ),
             ),
             const SizedBox(width: 10),
@@ -441,7 +429,6 @@ class _SearchScreenState extends State<SearchScreen> {
                 Icons.report_problem_rounded,
                 "Report\nFake Med",
                 _red,
-                const Color(0xFFFFF0EF),
               ),
             ),
             const SizedBox(width: 10),
@@ -450,7 +437,6 @@ class _SearchScreenState extends State<SearchScreen> {
                 Icons.article_rounded,
                 "Health\nArticles",
                 _orange,
-                const Color(0xFFFFF8EC),
               ),
             ),
           ],
@@ -458,25 +444,63 @@ class _SearchScreenState extends State<SearchScreen> {
 
         const SizedBox(height: 28),
 
+        // Trending Now
+        _buildSectionHeader("Trending Now"),
+        const SizedBox(height: 14),
+        ..._trending.map((t) => _buildTrendingCard(t)),
+
+        const SizedBox(height: 28),
+
         // Popular Medicines
-        const Text(
+        _buildSectionHeader(
           "Popular Medicines",
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w800,
-            color: _textDark,
-            letterSpacing: -0.2,
-          ),
+          trailingText: "See all",
+          onTrailingTap: () {},
         ),
-        const SizedBox(height: 12),
-        ..._allMedicines
-            .take(4)
-            .map((m) => _buildMedicineResultCard(m)),
+        const SizedBox(height: 14),
+        ..._allMedicines.take(4).map((m) => _buildMedicineResultCard(m)),
 
         const SizedBox(height: 20),
       ],
     );
   }
+
+  // ── Section Header ──────────────────────────────────────────────────────
+
+  Widget _buildSectionHeader(
+    String title, {
+    String? trailingText,
+    VoidCallback? onTrailingTap,
+  }) {
+    return Row(
+      children: [
+        Text(
+          title,
+          style: const TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.w800,
+            color: _textDark,
+            letterSpacing: -0.3,
+          ),
+        ),
+        const Spacer(),
+        if (trailingText != null)
+          GestureDetector(
+            onTap: onTrailingTap,
+            child: Text(
+              trailingText,
+              style: const TextStyle(
+                fontSize: 16.5,
+                fontWeight: FontWeight.w600,
+                color: _brand,
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+
+  // ── Recent Search Chip ──────────────────────────────────────────────────
 
   Widget _buildRecentChip(String label) {
     return GestureDetector(
@@ -504,11 +528,24 @@ class _SearchScreenState extends State<SearchScreen> {
                 fontWeight: FontWeight.w500,
               ),
             ),
+            const SizedBox(width: 6),
+            GestureDetector(
+              onTap: () {
+                setState(() => _recentSearches.remove(label));
+              },
+              child: const Icon(
+                Icons.close_rounded,
+                size: 13,
+                color: Color(0xFFB0B7C3),
+              ),
+            ),
           ],
         ),
       ),
     );
   }
+
+  // ── Trending Card ──────────────────────────────────────────────────────
 
   Widget _buildTrendingCard(_TrendingItem item) {
     return Padding(
@@ -522,19 +559,19 @@ class _SearchScreenState extends State<SearchScreen> {
         child: Row(
           children: [
             Container(
-              width: 44,
-              height: 44,
+              width: 50,
+              height: 50,
               decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(13),
+                color: item.tagBg,
+                borderRadius: BorderRadius.circular(14),
               ),
               child: Icon(
                 item.icon,
-                size: 22,
+                size: 24,
                 color: item.tagColor,
               ),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: 14),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -542,16 +579,17 @@ class _SearchScreenState extends State<SearchScreen> {
                   Text(
                     item.title,
                     style: const TextStyle(
-                      fontSize: 15.5,
+                      fontSize: 16,
                       fontWeight: FontWeight.w700,
                       color: _textDark,
+                      letterSpacing: -0.1,
                     ),
                   ),
-                  const SizedBox(height: 2),
+                  const SizedBox(height: 3),
                   Text(
                     item.subtitle,
                     style: const TextStyle(
-                      fontSize: 13.5,
+                      fontSize: 14,
                       color: _textMuted,
                     ),
                   ),
@@ -561,15 +599,15 @@ class _SearchScreenState extends State<SearchScreen> {
             const SizedBox(width: 8),
             Container(
               padding:
-                  const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
+                  const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
               decoration: BoxDecoration(
                 color: item.tagBg,
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(10),
               ),
               child: Text(
                 item.tag,
                 style: TextStyle(
-                  fontSize: 12,
+                  fontSize: 12.5,
                   fontWeight: FontWeight.w700,
                   color: item.tagColor,
                 ),
@@ -581,11 +619,12 @@ class _SearchScreenState extends State<SearchScreen> {
     );
   }
 
+  // ── Quick Action ──────────────────────────────────────────────────────
+
   Widget _buildQuickAction(
     IconData icon,
     String label,
     Color color,
-    Color bg,
   ) {
     return GestureDetector(
       onTap: () {},
@@ -594,7 +633,10 @@ class _SearchScreenState extends State<SearchScreen> {
         decoration: BoxDecoration(
           color: Colors.transparent,
           borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: const Color(0xFFE5E7EB), width: 1.5),
+          border: Border.all(
+            color: const Color(0xFFF3F4F6),
+            width: 1.5,
+          ),
         ),
         child: Column(
           children: [
@@ -630,68 +672,7 @@ class _SearchScreenState extends State<SearchScreen> {
     final results = _filteredResults;
 
     if (results.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 80,
-              height: 80,
-              decoration: const BoxDecoration(
-                color: _card,
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(
-                Icons.search_off_rounded,
-                size: 36,
-                color: _textMuted,
-              ),
-            ),
-            const SizedBox(height: 18),
-            const Text(
-              "No results found",
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w700,
-                color: _textDark,
-              ),
-            ),
-            const SizedBox(height: 6),
-            Text(
-              "Try searching for \"$_query\" with\ndifferent keywords",
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 14,
-                color: _textMuted,
-                height: 1.5,
-              ),
-            ),
-            const SizedBox(height: 24),
-            GestureDetector(
-              onTap: () {
-                _searchController.clear();
-                setState(() => _query = "");
-              },
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 24, vertical: 12),
-                decoration: BoxDecoration(
-                  color: _brandLight,
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                child: const Text(
-                  "Clear Search",
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w700,
-                    color: _brand,
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      );
+      return _buildEmptyState();
     }
 
     return ListView(
@@ -699,14 +680,41 @@ class _SearchScreenState extends State<SearchScreen> {
       children: [
         // Result count
         Padding(
-          padding: const EdgeInsets.only(bottom: 12),
-          child: Text(
-            "${results.length} result${results.length != 1 ? 's' : ''} found",
-            style: const TextStyle(
-              fontSize: 14,
-              color: _textMuted,
-              fontWeight: FontWeight.w500,
-            ),
+          padding: const EdgeInsets.only(bottom: 14),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(
+                  color: _brandLight,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Text(
+                  "${results.length} result${results.length != 1 ? 's' : ''} found",
+                  style: const TextStyle(
+                    fontSize: 13,
+                    color: _brand,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+              const Spacer(),
+              const Icon(
+                Icons.sort_rounded,
+                size: 20,
+                color: _textMuted,
+              ),
+              const SizedBox(width: 4),
+              const Text(
+                "Relevance",
+                style: TextStyle(
+                  fontSize: 13,
+                  color: _textMuted,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
           ),
         ),
         ...results.map((m) => _buildMedicineResultCard(m)),
@@ -714,6 +722,79 @@ class _SearchScreenState extends State<SearchScreen> {
       ],
     );
   }
+
+  // ── Empty State ──────────────────────────────────────────────────────
+
+  Widget _buildEmptyState() {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 40),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 88,
+              height: 88,
+              decoration: BoxDecoration(
+                color: _brandLight,
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.search_off_rounded,
+                size: 40,
+                color: _brand,
+              ),
+            ),
+            const SizedBox(height: 22),
+            const Text(
+              "No results found",
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.w800,
+                color: _textDark,
+                letterSpacing: -0.3,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              "We couldn't find anything matching\n\"$_query\". Try different keywords.",
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontSize: 15,
+                color: _textMuted,
+                height: 1.5,
+              ),
+            ),
+            const SizedBox(height: 28),
+            GestureDetector(
+              onTap: () {
+                _searchController.clear();
+                setState(() => _query = "");
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 28, vertical: 13),
+                decoration: BoxDecoration(
+                  color: _brand,
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: const Text(
+                  "Clear Search",
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ── Medicine Result Card ──────────────────────────────────────────────
 
   Widget _buildMedicineResultCard(_MedicineResult med) {
     return Padding(
@@ -728,8 +809,8 @@ class _SearchScreenState extends State<SearchScreen> {
           children: [
             // Medicine icon
             Container(
-              width: 50,
-              height: 50,
+              width: 52,
+              height: 52,
               decoration: BoxDecoration(
                 color: med.iconBg,
                 borderRadius: BorderRadius.circular(14),
@@ -742,21 +823,28 @@ class _SearchScreenState extends State<SearchScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  Text(
+                    med.name,
+                    style: const TextStyle(
+                      fontSize: 16.5,
+                      fontWeight: FontWeight.w700,
+                      color: _textDark,
+                      letterSpacing: -0.1,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 4),
                   Row(
                     children: [
-                      Expanded(
-                        child: Text(
-                          med.name,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700,
-                            color: _textDark,
-                            letterSpacing: -0.1,
-                          ),
-                          overflow: TextOverflow.ellipsis,
+                      Text(
+                        "${med.category} · ${med.manufacturer}",
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: _textMuted,
                         ),
                       ),
-                      if (med.verified)
+                      if (med.verified) ...[
+                        const SizedBox(width: 8),
                         Container(
                           padding: const EdgeInsets.symmetric(
                               horizontal: 7, vertical: 3),
@@ -781,15 +869,8 @@ class _SearchScreenState extends State<SearchScreen> {
                             ],
                           ),
                         ),
+                      ],
                     ],
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    "${med.category} · ${med.manufacturer}",
-                    style: const TextStyle(
-                      fontSize: 13.5,
-                      color: _textMuted,
-                    ),
                   ),
                 ],
               ),
@@ -797,8 +878,8 @@ class _SearchScreenState extends State<SearchScreen> {
             const SizedBox(width: 8),
             // Arrow
             Container(
-              width: 32,
-              height: 32,
+              width: 34,
+              height: 34,
               decoration: const BoxDecoration(
                 color: Colors.white,
                 shape: BoxShape.circle,
