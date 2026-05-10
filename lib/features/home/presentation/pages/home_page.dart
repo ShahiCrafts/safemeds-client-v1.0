@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:safemeds/features/reminders/presentation/pages/reminders_page.dart';
+import 'package:safemeds/features/pharmacy/presentation/pages/pharmacy_page.dart';
+import 'package:safemeds/features/profile/presentation/pages/profile_screen.dart';
+import 'package:safemeds/features/verification/presentation/pages/verification_page.dart';
 
 
 class MyHomePage extends StatefulWidget {
@@ -22,7 +26,7 @@ class _MyHomePageState extends State<MyHomePage> {
   static const Color _textDark   = Color(0xFF111827);
   static const Color _textMuted  = Color(0xFF6B7280);
 
-
+  late final List<Widget> _pages;
 
   final List<_ReminderGroup> _reminderGroups = [
     _ReminderGroup(
@@ -44,12 +48,12 @@ class _MyHomePageState extends State<MyHomePage> {
     ),
     _ReminderGroup(
       timeOfDay: "Afternoon",
-      icon: Icons.light_mode_outlined,
+      icon: Icons.wb_cloudy_outlined,
       timeRange: "1:00 – 2:00 PM",
       reminders: [
         _ReminderData(
-          name: "Metformin 850mg",
-          dose: "1 tablet · With food",
+          name: "Ibuprofen 400mg",
+          dose: "1 tablet · After meal",
           taken: false,
         ),
       ],
@@ -74,9 +78,14 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
+    _pages = [
+      _buildHomeView(),
+      const RemindersPage(),
+      const VerificationPage(),
+      const PharmacyPage(),
+      const ProfileScreen(),
+    ];
   }
-
-
 
   @override
   void dispose() {
@@ -89,30 +98,37 @@ class _MyHomePageState extends State<MyHomePage> {
       extendBody: true,
       backgroundColor: Colors.white,
       bottomNavigationBar: _buildBottomNav(),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.only(bottom: 96),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildHeader(),
-              const SizedBox(height: 20),
-              _buildGamificationSection(),
-              const SizedBox(height: 28),
-              const Padding(
-                padding: EdgeInsets.only(left: 20, right: 20, bottom: 12),
-                child: Divider(color: Color(0xFFE5E7EB), thickness: 1.2, height: 1),
-              ),
-              _buildHealthStatsRow(),
-              const SizedBox(height: 32),
-              _buildRemindersSection(),
-              const SizedBox(height: 32),
-              _buildMedicationOverview(),
-              const SizedBox(height: 32),
-              _buildHealthEvents(),
-              const SizedBox(height: 8),
-            ],
-          ),
+      body: IndexedStack(
+        index: _bottomNavIndex,
+        children: _pages,
+      ),
+    );
+  }
+
+  Widget _buildHomeView() {
+    return SafeArea(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.only(bottom: 96),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildHeader(),
+            const SizedBox(height: 20),
+            _buildGamificationSection(),
+            const SizedBox(height: 28),
+            const Padding(
+              padding: EdgeInsets.only(left: 20, right: 20, bottom: 12),
+              child: Divider(color: Color(0xFFE5E7EB), thickness: 1.2, height: 1),
+            ),
+            _buildHealthStatsRow(),
+            const SizedBox(height: 32),
+            _buildRemindersSection(),
+            const SizedBox(height: 32),
+            _buildMedicationOverview(),
+            const SizedBox(height: 32),
+            _buildHealthEvents(),
+            const SizedBox(height: 8),
+          ],
         ),
       ),
     );
