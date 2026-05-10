@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'search_screen.dart';
+import 'notification_screen.dart';
+import 'profile_screen.dart';
+import 'pharmacy_page.dart';
+import 'scanner_screen.dart';
 
 
 class MyHomePage extends StatefulWidget {
@@ -149,11 +154,17 @@ class _MyHomePageState extends State<MyHomePage> {
             ],
           ),
           const Spacer(),
-          _HeaderBtn(icon: Icons.search_rounded),
+          GestureDetector(
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SearchScreen())),
+            child: _HeaderBtn(icon: Icons.search_rounded),
+          ),
           const SizedBox(width: 8),
           Stack(
             children: [
-              _HeaderBtn(icon: Icons.notifications_none_rounded),
+              GestureDetector(
+                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const NotificationScreen())),
+                child: _HeaderBtn(icon: Icons.notifications_none_rounded),
+              ),
               Positioned(
                 top: 2,
                 right: 2,
@@ -993,7 +1004,15 @@ class _MyHomePageState extends State<MyHomePage> {
                     final active = e.key == _bottomNavIndex;
                     return Expanded(
                       child: GestureDetector(
-                        onTap: () => setState(() => _bottomNavIndex = e.key),
+                        behavior: HitTestBehavior.opaque,
+                        onTap: () {
+                          if (e.key == 0) {
+                            setState(() => _bottomNavIndex = e.key);
+                          } else if (e.key == 1) {
+                            // Reminders – placeholder
+                            setState(() => _bottomNavIndex = e.key);
+                          }
+                        },
                         child: _NavTile(
                           icon: e.value.icon,
                           label: e.value.label,
@@ -1008,7 +1027,14 @@ class _MyHomePageState extends State<MyHomePage> {
                     final active = idx == _bottomNavIndex;
                     return Expanded(
                       child: GestureDetector(
-                        onTap: () => setState(() => _bottomNavIndex = idx),
+                        behavior: HitTestBehavior.opaque,
+                        onTap: () {
+                          if (e.key == 0) {
+                            Navigator.push(context, MaterialPageRoute(builder: (_) => const PharmacyPage()));
+                          } else if (e.key == 1) {
+                            Navigator.push(context, MaterialPageRoute(builder: (_) => const ProfileScreen()));
+                          }
+                        },
                         child: _NavTile(
                           icon: e.value.icon,
                           label: e.value.label,
@@ -1025,7 +1051,7 @@ class _MyHomePageState extends State<MyHomePage> {
         Positioned(
           top: -26,
           child: GestureDetector(
-            onTap: () => setState(() => _bottomNavIndex = 2),
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ScannerScreen())),
             child: Container(
               width: 58,
               height: 58,
