@@ -472,7 +472,7 @@ class _MyHomePageState extends State<MyHomePage> {
             decoration: BoxDecoration(
               color: Colors.transparent,
               borderRadius: BorderRadius.circular(22),
-              border: Border.all(color: const Color(0xFFF3F4F6), width: 1.5),
+              border: Border.all(color: const Color(0xFFE5E7EB), width: 1.5),
             ),
             child: Column(
               children: [
