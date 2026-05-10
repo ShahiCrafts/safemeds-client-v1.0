@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'screens/home_page.dart';
-import 'screens/login_screen.dart';
-import 'screens/signup_screen.dart';
-import 'screens/splash_screen.dart';
+import 'features/home/presentation/pages/home_page.dart';
+import 'features/auth/presentation/pages/login_screen.dart';
+import 'features/auth/presentation/pages/signup_screen.dart';
+import 'features/splash/presentation/pages/splash_screen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,17 +25,18 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'safemeds',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF2563EB)),
+        useMaterial3: true,
       ),
       initialRoute: '/',
       routes: {
         '/': (context) => const SplashScreen(),
         '/login': (context) => const LoginScreen(),
         '/signup': (context) => const SignupScreen(),
-        '/home': (context) => const MyHomePage(title: 'Home'),
+        '/home': (context) => const MyHomePage(title: 'safemeds'),
       },
     );
   }
