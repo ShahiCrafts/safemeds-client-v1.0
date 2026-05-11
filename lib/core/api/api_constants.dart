@@ -13,4 +13,5 @@ class ApiConstants {
 
   static String get authLogin => '$baseUrl/api/v1/auth/login';
   static String get authSignup => '$baseUrl/api/v1/auth/register';
+  static String get authOAuthCallback => '$baseUrl/api/v1/auth/oauth/callback';
 }
