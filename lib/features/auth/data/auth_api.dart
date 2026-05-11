@@ -65,4 +65,26 @@ class AuthApi {
       jsonDecode(response.body) as Map<String, dynamic>,
     );
   }
+  
+  Future<TokenResponse> googleLogin({required String idToken}) async {
+    final response = await _client.postJson(ApiConstants.authOAuthCallback, {
+      'provider': 'google',
+      'id_token': idToken,
+    });
+
+    if (response.statusCode != 200) {
+      String message = 'Google Login failed';
+      try {
+        final error = jsonDecode(response.body);
+        message = error['detail'] ?? error['message'] ?? message;
+      } catch (_) {
+        message = 'Server Error: ${response.statusCode}';
+      }
+      throw Exception(message);
+    }
+
+    return TokenResponse.fromJson(
+      jsonDecode(response.body) as Map<String, dynamic>,
+    );
+  }
 }
