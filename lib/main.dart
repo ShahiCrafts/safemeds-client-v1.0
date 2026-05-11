@@ -4,6 +4,7 @@ import 'features/home/presentation/pages/home_page.dart';
 import 'features/auth/presentation/pages/login_screen.dart';
 import 'features/auth/presentation/pages/signup_screen.dart';
 import 'features/splash/presentation/pages/splash_screen.dart';
+import 'features/profile/presentation/pages/edit_profile_screen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -37,6 +38,7 @@ class MyApp extends StatelessWidget {
         '/login': (context) => const LoginScreen(),
         '/signup': (context) => const SignupScreen(),
         '/home': (context) => const MyHomePage(title: 'safemeds'),
+        '/edit-profile': (context) => const EditProfileScreen(),
       },
     );
   }
